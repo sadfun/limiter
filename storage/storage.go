@@ -4,10 +4,7 @@ import (
 	tb "github.com/sadfun/limiter/bucket"
 )
 
-type Marshaler interface {
-	Marshal() ([]byte, error)
-}
-
+// Storage is a generic interface for a storage that holds buckets.
 type Storage[K comparable] interface {
 	// Update the bucket with new values.
 	// Must hold a distributed lock on the key.

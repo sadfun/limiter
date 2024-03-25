@@ -6,9 +6,12 @@ import (
 )
 
 type MapStorage[K comparable] struct {
+	// Buckets for each key.
 	buckets map[K]tb.Bucket
-	locks   map[K]*sync.Mutex
 	mx      sync.RWMutex
+
+	// Locks for each key, to allow atomic updates.
+	locks map[K]*sync.Mutex
 }
 
 func NewMapStorage[K comparable]() Storage[K] {
@@ -18,6 +21,7 @@ func NewMapStorage[K comparable]() Storage[K] {
 	}
 }
 
+// getLock returns a lock for the key from the locks map.
 func (ms *MapStorage[K]) getLock(k K) *sync.Mutex {
 	ms.mx.Lock()
 	defer ms.mx.Unlock()
@@ -29,6 +33,7 @@ func (ms *MapStorage[K]) getLock(k K) *sync.Mutex {
 	return ms.locks[k]
 }
 
+// Update updates the bucket with new values. Hold a per-key lock.
 func (ms *MapStorage[K]) Update(key K, updater func(bucket tb.Bucket) (newBucket tb.Bucket)) {
 	l := ms.getLock(key)
 
