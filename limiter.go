@@ -70,5 +70,4 @@ func (limiter *Limiter[K]) UseN(key K, n int) (ok bool) {
 func (limiter *Limiter[K]) dropExpiredTokens(now time.Time, tb *tb.Bucket) {
 	i, _ := slices.BinarySearch(tb.Tokens, now.Add(-limiter.t).UnixNano())
 	tb.Tokens = tb.Tokens[i:]
-	tb.LastEvent = now
 }
